@@ -1,0 +1,59 @@
+<template>
+    <div class="px-2 py-2 sm:px-3 lg:px-4 w-full">
+        <h2 class="text-2xl font-bold">Create User</h2>
+
+        <h3 class="pl-1 pt-3">User Information</h3>
+        <div class="formgrid grid bg-white p-3 border-round pt-4 mx-1">
+            <div class="field col-12 md:col-6">
+                <label>User Name</label>
+                <GlobalInputText v-model="userInfo.userName" placeholder="Name" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Email</label>
+                <GlobalInputText v-model="userInfo.email" placeholder="Email" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Phone Number</label>
+                <GlobalInputText v-model="userInfo.phoneNumber" placeholder="Phone Number" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Password</label>
+                <GlobalInputText type="password" v-model="userInfo.password" placeholder="Password" />
+            </div>
+            
+            <div class="field col-12 md:col-10"></div>
+            <div class="field col-12 md:col-2">
+                <GlobalButton title="Add User" class="mt-5" @buttonTapped="addUser" />
+            </div>
+
+        </div>
+        
+    </div>
+</template>
+
+<script setup>
+definePageMeta({
+  middleware: 'auth'
+})
+const userInfo = ref({
+    email: "",
+    password: "",
+    phoneNumber: "",
+    userName: ""
+})
+
+const addUser = async () => {
+    const userToken = useCookie('token')
+    const token = "Bearer " + userToken.value
+    console.log(token)
+    console.log(userInfo)
+    const { data: responseData } = await useFetch('http://ec2-18-205-246-50.compute-1.amazonaws.com:8080/api/v1/admin/signup', {
+        headers: {
+            "Authorization": token
+        },
+        method: 'post',
+        body: userInfo
+    })
+    console.log(responseData)
+};
+</script>
