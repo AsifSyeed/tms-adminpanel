@@ -24,7 +24,7 @@ const handleButtonTap = () => {
 };
 
 const onSubmit = async () => {
-  const { data: responseData } = await useFetch('http://ec2-18-205-246-50.compute-1.amazonaws.com:8080/api/v1/auth/admin/token', {
+  const { data: responseData } = await useFetch('https://api.countersbd.com/api/v1/auth/admin/token', {
     method: 'post',
     body: {
       email: email.value,

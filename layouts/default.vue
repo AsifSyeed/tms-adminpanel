@@ -13,7 +13,7 @@
 const userToken = useCookie('token')
 const token = "Bearer " + userToken.value
 console.log(token)
-const { data: responseData } = await useFetch('http://ec2-18-205-246-50.compute-1.amazonaws.com:8080/api/v1/admin/me', {
+const { data: responseData } = await useFetch('https://api.countersbd.com/api/v1/admin/me', {
                 headers: {
                     "Authorization": token
                 },

@@ -105,7 +105,7 @@ const addEvent = async () => {
     const token = "Bearer " + userToken.value
     console.log(token)
     console.log(eventData)
-    const { data: responseData } = await useFetch('http://ec2-18-205-246-50.compute-1.amazonaws.com:8080/api/v1/event/create', {
+    const { data: responseData } = await useFetch('https://api.countersbd.com/api/v1/event/create', {
         headers: {
             "Authorization": token
         },

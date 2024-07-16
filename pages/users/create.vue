@@ -47,7 +47,7 @@ const addUser = async () => {
     const token = "Bearer " + userToken.value
     console.log(token)
     console.log(userInfo)
-    const { data: responseData } = await useFetch('http://ec2-18-205-246-50.compute-1.amazonaws.com:8080/api/v1/admin/signup', {
+    const { data: responseData } = await useFetch('https://api.countersbd.com/api/v1/admin/signup', {
         headers: {
             "Authorization": token
         },
