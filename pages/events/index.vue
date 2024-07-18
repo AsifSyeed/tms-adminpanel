@@ -30,7 +30,7 @@
 definePageMeta({
   middleware: 'auth'
 })
-const { data: events } = await useFetch('http://ec2-18-205-246-50.compute-1.amazonaws.com:8080/api/v1/event/all')
+const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/all')
 </script>
 
 <style scoped>
