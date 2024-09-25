@@ -49,6 +49,19 @@ const items = ref([
         ]
     },
     {
+        label: 'Referral',
+        items: [
+            {
+                label: 'Referral List',
+                link: '/referral'
+            },
+            {
+                label: 'Create Referral',
+                link: '/referral/create'
+            }
+        ]
+    },
+    {
         label: 'Profile',
         items: [
             {
