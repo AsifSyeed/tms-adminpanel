@@ -8,7 +8,20 @@
                 <Column field="referralCode" header="Referral Code"></Column>
                 <Column field="referralDiscount" header="Referral Discount"></Column>
                 <Column field="eventId" header="Event ID"></Column>
-                <Column field="referralType" header="Referral Type" :body="mapReferralType"></Column>
+                <Column field="referralType" header="Referral Type">
+                    <template #body="slotProps">
+                        {{ mapReferralType(slotProps.data) }}
+                    </template>
+                </Column>
+                <Column field="isActive" header="Active"></Column>
+                <!-- Add the button column here -->
+                <Column header="Actions">
+                    <template #body="slotProps">
+                        <button @click="goToEditView(slotProps.data.id)" class="px-3 py-2 text-white bg-blue-500 rounded">
+                            Edit
+                        </button>
+                    </template>
+                </Column>
             </DataTable>
         </div>
     </div>
@@ -18,9 +31,10 @@
 definePageMeta({
     middleware: 'auth'
 })
+
+// Define the token and fetch data
 const userToken = useCookie('token')
 const token = "Bearer " + userToken.value
-console.log(token)
 
 const { data: referral } = await useFetch('https://api.countersbd.com/api/v1/referral/admin-all', {
     headers: {
@@ -29,23 +43,33 @@ const { data: referral } = await useFetch('https://api.countersbd.com/api/v1/ref
     method: 'get'
 })
 
-console.log("referralsssssss")
-console.log(referral)
-
-// Mapping for ReferralTypeEnum
+// Mapping referralType
 const referralTypeMap = {
     1: 'Default',
     2: 'Custom'
 }
 
-// Method to map referralType
 const mapReferralType = (rowData) => {
     return referralTypeMap[rowData.referralType] || 'Unknown';
 }
+
+// Function to handle navigation to edit view
+const goToEditView = (id) => {
+    navigateTo(`/referral/${id}`)
+}
+
 </script>
 
 <style scoped>
 .p-component {
     border-radius: 0px !important;
+}
+
+button {
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #3b82f6;
 }
 </style>
