@@ -49,6 +49,15 @@ const items = ref([
         ]
     },
     {
+        label: 'Transactions',
+        items: [
+            {
+                label: 'Transaction List',
+                link: '/transactions'
+            }
+        ]
+    },
+    {
         label: 'Online Tickets',
         items: [
             {
