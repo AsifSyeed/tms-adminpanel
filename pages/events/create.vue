@@ -113,11 +113,8 @@ const addEvent = async () => {
         body: eventData
     })
     console.log(responseData)
-    //   if (responseData.value.responseCode === 200) {
-    //     window.localStorage.setItem("token", responseData.value.data.token)
-    //     const isAuthenticated = isAuthenticatedState()
-    //     isAuthenticated.value = true
-    //     navigateTo("/")
-    //   }
+      if (responseData.value.responseCode === 200) {
+        navigateTo("/")
+      }
 };
 </script>
