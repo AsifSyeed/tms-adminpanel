@@ -6,21 +6,23 @@
                     <img src="~/assets/Logo.png" alt="" class="w-full">
                 </NuxtLink>
             </div>
-            <template v-for="item in items" class="p-4">
+            <template v-for="item in filteredItems" class="p-4">
                 <div class="text-gray font-bold pb-2">{{ item.label }}</div>
-                <template v-for="i in item.items">
-                    <MainMenuButton :name="i.label" :link="i.link" />
+                <template v-for="i in item.items" v-if="!(item.label === 'Users' && userRole !== 0)">
+                    <MainMenuButton :name="i.label" :link="i.link" v-if="!(i.link === '/events/create' && userRole !== 0)" />
                     <div class="p-1"></div>
                 </template>
                 <div class="pb-3"></div>
             </template>
-
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
+
+const userRole = useCookie('userRole').value; // Get userRole from cookie
+
 const items = ref([
     {
         label: 'Events',
@@ -93,6 +95,17 @@ const items = ref([
         ]
     },
 ]);
+
+// Filtered items based on userRole
+const filteredItems = computed(() => {
+    return items.value.filter(item => {
+        // Hide Users section if userRole is not 0
+        if (item.label === 'Users' && userRole !== 0) {
+            return false;
+        }
+        return true;
+    });
+});
 </script>
 
 <style>

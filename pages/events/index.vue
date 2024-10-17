@@ -30,7 +30,16 @@
 definePageMeta({
   middleware: 'auth'
 })
-const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/all')
+
+const userToken = useCookie('token')
+const token = "Bearer " + userToken.value
+
+const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/admin/all',{
+    headers: {
+        "Authorization": token
+    },
+    method: 'get'
+})
 </script>
 
 <style scoped>
