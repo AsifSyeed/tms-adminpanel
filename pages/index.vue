@@ -13,20 +13,31 @@
       </select>
     </div>
 
+    <!-- Dashboard Stats -->
     <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
-      <!-- Total Tickets Purchased -->
       <div class="bg-blue-500 text-white p-4 rounded shadow-lg">
         <h3 class="text-lg font-semibold">Total Tickets Purchased</h3>
         <p class="text-3xl mt-2">{{ totalTickets }}</p>
       </div>
 
-      <!-- Total Revenue -->
       <div class="bg-green-500 text-white p-4 rounded shadow-lg">
         <h3 class="text-lg font-semibold">Total Revenue</h3>
         <p class="text-3xl mt-2">৳{{ totalRevenue }}</p>
       </div>
 
-      <!-- Total Users -->
+      <!-- Category Sales Info -->
+      <div v-if="categorySalesInfoList.length > 0">
+        <h3 class="text-xl font-bold mt-6 mb-2">Category Sales Info</h3>
+        <div class="category-sales-container overflow-x-auto whitespace-nowrap">
+          <div v-for="category in categorySalesInfoList" :key="category.categoryId"
+            class="category-card inline-block bg-gray-100 p-4 m-2 rounded shadow-lg min-w-[200px]">
+            <h4 class="font-semibold">{{ category.categoryName }}</h4>
+            <p class="text-md">Purchased Tickets: {{ category.totalPurchasedTicket }}</p>
+            <p class="text-md">Revenue: ৳{{ category.totalRevenue }}</p>
+          </div>
+        </div>
+      </div>
+
       <div class="bg-purple-500 text-white p-4 rounded shadow-lg">
         <h3 class="text-lg font-semibold">Total Users</h3>
         <p class="text-3xl mt-2">{{ totalUsers }}</p>
@@ -38,16 +49,15 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 
-// Add authorization token (use your actual token handling here)
 const userToken = useCookie('token');
 const token = "Bearer " + userToken.value;
 
-// Reactive variables to hold data
 const totalTickets = ref(0);
 const totalRevenue = ref(0);
 const totalUsers = ref(0);
 const eventList = ref([]);
 const selectedEvent = ref("");
+const categorySalesInfoList = ref([]); // New array to hold category sales data
 
 // Fetch dashboard data from the API
 const fetchDashboardData = async (eventId = '') => {
@@ -62,6 +72,7 @@ const fetchDashboardData = async (eventId = '') => {
     totalTickets.value = response.data.totalPurchasedTicket;
     totalRevenue.value = response.data.totalRevenue;
     totalUsers.value = response.data.totalUser;
+    categorySalesInfoList.value = response.data.categorySalesInfoList; // Update category sales list
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
   }
@@ -76,9 +87,7 @@ const fetchEventList = async () => {
       }
     });
 
-    // Update the reactive variable with the fetched event list data
     eventList.value = response.data; // Assuming the data structure returns a list of events
-    console.log(eventList.value);
   } catch (error) {
     console.error('Error fetching event list data:', error);
   }
@@ -91,7 +100,6 @@ watch(selectedEvent, (newEventId) => {
   }
 });
 
-// Fetch the data when the component is mounted
 onMounted(() => {
   fetchDashboardData();
   fetchEventList();
@@ -119,5 +127,24 @@ definePageMeta({
 
 .shadow-lg {
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for horizontal scrollable category sales info */
+.category-sales-container {
+  padding: 1rem 0;
+}
+
+.category-card {
+  background-color: #f7f7f7;
+  min-width: 200px;
+  text-align: center;
+}
+
+.category-card h4 {
+  margin-bottom: 0.5rem;
+}
+
+.category-card p {
+  margin: 0.25rem 0;
 }
 </style>
