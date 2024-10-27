@@ -25,10 +25,21 @@
                 <Column field="ticketOwnerName" header="Owner Name"></Column>
                 <Column field="ticketOwnerNumber" header="Owner Number"></Column>
                 <Column field="ticketOwnerEmail" header="Owner Email"></Column>
-                <Column field="ticketPrice" header="Price"></Column>
                 <Column field="ticketTransactionId" header="Transaction ID"></Column>
                 <Column field="used" header="Ticket Used"></Column>
                 <Column field="appliedCoupon" header="Applied Coupon"></Column>
+
+                <!-- Actions Column with Download and Edit Buttons -->
+                <Column header="Actions">
+                    <template #body="slotProps">
+                        <button 
+                            @click="downloadTicket(slotProps.data.ticketId)" 
+                            class="px-3 py-2 text-white bg-green-500 rounded mr-2"
+                        >
+                            Download PDF
+                        </button>
+                    </template>
+                </Column>
             </DataTable>
 
             <!-- Placeholder for No Data -->
@@ -47,11 +58,12 @@ definePageMeta({
 })
 
 // Define the token and fetch data
-const userToken = useCookie('token')
-const token = "Bearer " + userToken.value
+const userToken = useCookie('token');
+const token = "Bearer " + userToken.value;
 
 const tickets = ref([]); // Use ref to make tickets reactive
 const searchTerm = ref(''); // Reactive property for the search input
+const loadingTickets = ref([]); // Track loading state for tickets
 
 // Fetch data
 const { data } = await useFetch('https://api.countersbd.com/api/v1/ticket/admin-all', {
@@ -76,7 +88,7 @@ const filteredTickets = computed(() => {
     if (!searchTerm.value) {
         return tickets.value; // Return all tickets if search term is empty
     }
-    
+
     const seenTransactionIds = new Set(); // Track seen transaction IDs
     const filtered = tickets.value.filter(ticket => {
         const matchesSearch = (
@@ -108,6 +120,35 @@ const filteredTickets = computed(() => {
 
     return filtered; // Return the filtered tickets
 });
+
+// Download ticket function
+function downloadTicket(ticketId) {
+    loadingTickets.value.push(ticketId); // Start loading for this ticket
+    useFetch(`https://api.countersbd.com/api/v1/ticket/download-pdf?ticketId=${ticketId}`, {
+        headers: {
+            "Authorization": token,
+        },
+        method: "GET",
+        responseType: "blob" // Important for handling binary files like PDFs
+    }).then(res => {
+        const data = res.data.value;
+        const error = res.error.value;
+        if (error) {
+            toast.add({ severity: 'error', summary: 'Error!', detail: error.data.message, life: 3000 });
+        } else {
+            // Create a blob from the response and download the file
+            const blob = new Blob([data], { type: "application/pdf" });
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `ticket_${ticketId}.pdf`;
+            link.click();
+        }
+    }).catch(error => {
+        toast.add({ severity: 'error', summary: 'Error!', detail: error.data.message, life: 3000 });
+    }).finally(() => {
+        loadingTickets.value = loadingTickets.value.filter(id => id !== ticketId); // Stop loading
+    });
+}
 </script>
 
 <style scoped>
