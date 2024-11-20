@@ -65,6 +65,10 @@ const items = ref([
             {
                 label: 'Ticket List',
                 link: '/online-tickets'
+            },
+            {
+                label: 'Create Ticket',
+                link: '/online-tickets/create'
             }
         ]
     },

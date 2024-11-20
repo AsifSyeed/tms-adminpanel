@@ -1,11 +1,11 @@
 <template>
-  <div class="px-2 py-2 sm:px-3 lg:px-4 w-full">
-    <h2 class="text-2xl font-bold pb-4">Admin Dashboard</h2>
+  <div class="px-4 py-4">
+    <h2 class="text-2xl font-bold mb-6">Admin Dashboard</h2>
 
     <!-- Event Dropdown -->
-    <div class="mb-4">
+    <div class="mb-6">
       <label for="eventDropdown" class="block text-lg font-semibold mb-2">Select Event</label>
-      <select id="eventDropdown" v-model="selectedEvent" class="w-full p-2 border rounded shadow-sm">
+      <select id="eventDropdown" v-model="selectedEvent" class="w-full p-3 border rounded shadow-sm">
         <option value="" disabled>Select an event</option>
         <option v-for="event in eventList" :key="event.eventId" :value="event.eventId">
           {{ event.eventName }}
@@ -13,35 +13,59 @@
       </select>
     </div>
 
-    <!-- Dashboard Stats -->
-    <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
-      <div class="bg-blue-500 text-white p-4 rounded shadow-lg">
-        <h3 class="text-lg font-semibold">Total Tickets Purchased</h3>
-        <p class="text-3xl mt-2">{{ totalTickets }}</p>
-      </div>
-
-      <div class="bg-green-500 text-white p-4 rounded shadow-lg">
-        <h3 class="text-lg font-semibold">Total Revenue</h3>
-        <p class="text-3xl mt-2">৳{{ totalRevenue }}</p>
-      </div>
-
-      <!-- Category Sales Info -->
-      <div v-if="categorySalesInfoList.length > 0">
-        <h3 class="text-xl font-bold mt-6 mb-2">Category Sales Info</h3>
-        <div class="category-sales-container overflow-x-auto whitespace-nowrap">
-          <div v-for="category in categorySalesInfoList" :key="category.categoryId"
-            class="category-card inline-block bg-gray-100 p-4 m-2 rounded shadow-lg min-w-[200px]">
-            <h4 class="font-semibold">{{ category.categoryName }}</h4>
-            <p class="text-md">Purchased Tickets: {{ category.totalPurchasedTicket }}</p>
-            <p class="text-md">Revenue: ৳{{ category.totalRevenue }}</p>
-          </div>
+    <!-- Dashboard Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <!-- Tickets Purchased Card -->
+      <div class="dashboard-card">
+        <!-- Icon Container -->
+        <div class="icon-container">
+          <i class="pi pi-ticket icon"></i>
+        </div>
+        <!-- Text Content -->
+        <div class="text-content">
+          <h3 class="title">Tickets Purchased</h3>
+          <p class="value">{{ totalTickets }}</p>
+          <!-- <p class="subtitle">24 new since last visit</p> -->
         </div>
       </div>
 
-      <div class="bg-purple-500 text-white p-4 rounded shadow-lg">
-        <h3 class="text-lg font-semibold">Total Users</h3>
-        <p class="text-3xl mt-2">{{ totalUsers }}</p>
+      <!-- Total Revenue Card -->
+      <div class="dashboard-card">
+        <div class="icon-container bg-orange-100">
+          <i class="pi pi-dollar icon text-orange-500"></i>
+        </div>
+        <div class="text-content">
+          <h3 class="title">Total Revenue</h3>
+          <p class="value">৳{{ totalRevenue }}</p>
+          <!-- <p class="subtitle">24 new since last visit</p> -->
+        </div>
       </div>
+
+      <!-- Total Users Card -->
+      <div class="dashboard-card">
+        <div class="icon-container bg-cyan-100">
+          <i class="pi pi-users icon text-cyan-500"></i>
+        </div>
+        <div class="text-content">
+          <h3 class="title">Total Users</h3>
+          <p class="value">{{ totalUsers }}</p>
+          <!-- <p class="subtitle">24 new since last visit</p> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Sales Info -->
+    <div v-if="selectedEvent" class="bg-white shadow-lg rounded-lg p-4">
+      <h3 class="text-xl font-bold mb-4">Category Info</h3>
+      <DataTable :value="products" :rows="5" :paginator="true" responsiveLayout="scroll" class="w-full">
+        <Column field="categoryName" header="Category" style="width: 35%"></Column>
+        <Column field="totalPurchasedTicket" header="Tickets Sold" style="width: 35%"></Column>
+        <Column field="totalRevenue" header="Revenue" style="width: 30%">
+          <template #body="slotProps">
+            ৳{{ slotProps.data.totalRevenue }}
+          </template>
+        </Column>
+      </DataTable>
     </div>
   </div>
 </template>
@@ -57,94 +81,102 @@ const totalRevenue = ref(0);
 const totalUsers = ref(0);
 const eventList = ref([]);
 const selectedEvent = ref("");
-const categorySalesInfoList = ref([]); // New array to hold category sales data
+const products = ref([]);
 
-// Fetch dashboard data from the API
+// Fetch Dashboard Data
 const fetchDashboardData = async (eventId = '') => {
   try {
     const response = await $fetch(`https://api.countersbd.com/api/v1/admin/dashboard-info/${eventId}`, {
-      headers: {
-        "Authorization": token
-      }
+      headers: { Authorization: token },
     });
-
-    // Update the reactive variables with the fetched data
     totalTickets.value = response.data.totalPurchasedTicket;
     totalRevenue.value = response.data.totalRevenue;
     totalUsers.value = response.data.totalUser;
-    categorySalesInfoList.value = response.data.categorySalesInfoList; // Update category sales list
+    products.value = response.data.categorySalesInfoList || [];
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
   }
 };
 
-// Fetch event list data from the API
+// Fetch Event List
 const fetchEventList = async () => {
   try {
     const response = await $fetch('https://api.countersbd.com/api/v1/event/admin/all', {
-      headers: {
-        "Authorization": token
-      }
+      headers: { Authorization: token },
     });
-
-    eventList.value = response.data; // Assuming the data structure returns a list of events
+    eventList.value = response.data;
   } catch (error) {
-    console.error('Error fetching event list data:', error);
+    console.error('Error fetching event list:', error);
   }
 };
 
-// Watch for changes in the selectedEvent variable and fetch new data when it changes
+// Watch for Event Selection Changes
 watch(selectedEvent, (newEventId) => {
-  if (newEventId) {
-    fetchDashboardData(newEventId);
-  }
+  if (newEventId) fetchDashboardData(newEventId);
 });
 
 onMounted(() => {
   fetchDashboardData();
   fetchEventList();
 });
-
-definePageMeta({
-  middleware: 'auth'
-});
 </script>
 
 <style scoped>
-.grid {
-  display: grid;
+/* Card Styles */
+.dashboard-card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 170px;
 }
 
-.grid-cols-1 {
-  grid-template-columns: repeat(1, 1fr);
+/* Icon Container */
+.icon-container {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  background-color: #e0f2fe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (min-width: 768px) {
-  .grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* Icon Styles */
+.icon {
+  font-size: 1.5rem;
 }
 
-.shadow-lg {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+/* Text Content */
+.text-content {
+  margin-top: 60px;
 }
 
-/* Styles for horizontal scrollable category sales info */
-.category-sales-container {
-  padding: 1rem 0;
+.title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
 }
 
-.category-card {
-  background-color: #f7f7f7;
-  min-width: 200px;
-  text-align: center;
+.value {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1e293b;
 }
 
-.category-card h4 {
-  margin-bottom: 0.5rem;
-}
-
-.category-card p {
-  margin: 0.25rem 0;
+.subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #22c55e;
+  margin-top: 4px;
 }
 </style>

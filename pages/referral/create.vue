@@ -58,16 +58,21 @@ const referralInfo = ref({
     referralType: 2
 })
 
-const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/all')
+const userToken = useCookie('token')
+const token = "Bearer " + userToken.value
+
+const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/admin/all',{
+    headers: {
+        "Authorization": token
+    },
+    method: 'get'
+})
 
 console.log("eventesssssss");
 console.log(events);
 
 
 const addReferral = async () => {
-    const userToken = useCookie('token')
-    const token = "Bearer " + userToken.value
-    console.log(token)
     console.log(referralInfo)
     const { data: responseData } = await useFetch('https://api.countersbd.com/api/v1/referral/create', {
         headers: {

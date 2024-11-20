@@ -7,6 +7,7 @@
                 <Column field="emailId" header="Email"></Column>
                 <Column field="phoneNumber" header="Phone Number"></Column>
                 <Column field="userName" header="User Name"></Column>
+                <Column field="numberOfTickets" header="Total Tickets Bought"></Column>
             </DataTable>
         </div>
     </div>
