@@ -32,7 +32,8 @@
                 <label>Referral</label>
                 <select v-model="selectedReferralCode" @change="updateReferral" class="p-inputtext p-component w-full">
                     <option value="" disabled>Select a Referral</option>
-                    <option v-for="referral in validCoupons" :key="referral.referralCode" :value="referral.referralCode">
+                    <option v-for="referral in validCoupons" :key="referral.referralCode"
+                        :value="referral.referralCode">
                         {{ referral.referralCode }}
                     </option>
                 </select>

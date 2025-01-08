@@ -17,7 +17,8 @@
                 <!-- Add the button column here -->
                 <Column header="Actions">
                     <template #body="slotProps">
-                        <button @click="goToEditView(slotProps.data.id)" class="px-3 py-2 text-white bg-blue-500 rounded">
+                        <button @click="goToEditView(slotProps.data.id)"
+                            class="px-3 py-2 text-white bg-blue-500 rounded">
                             Edit
                         </button>
                     </template>

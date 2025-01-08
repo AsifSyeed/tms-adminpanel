@@ -61,7 +61,7 @@ const referralInfo = ref({
 const userToken = useCookie('token')
 const token = "Bearer " + userToken.value
 
-const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/admin/all',{
+const { data: events } = await useFetch('https://api.countersbd.com/api/v1/event/admin/all', {
     headers: {
         "Authorization": token
     },

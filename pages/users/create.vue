@@ -36,7 +36,7 @@
             </div>
 
         </div>
-        
+
     </div>
 </template>
 
@@ -44,7 +44,7 @@
 import { ref } from 'vue';
 
 definePageMeta({
-  middleware: 'auth'
+    middleware: 'auth'
 })
 
 const userInfo = ref({

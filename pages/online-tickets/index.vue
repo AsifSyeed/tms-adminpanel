@@ -4,22 +4,14 @@
 
         <!-- Search Input -->
         <div class="mb-4">
-            <input 
-                type="text" 
-                v-model="searchTerm" 
-                placeholder="Search by Event Name, Owner Name, Owner Number, Owner Email, Transaction ID, or Applied Coupon" 
-                class="p-inputtext w-full" 
-            />
+            <input type="text" v-model="searchTerm"
+                placeholder="Search by Event Name, Owner Name, Owner Number, Owner Email, Transaction ID, or Applied Coupon"
+                class="p-inputtext w-full" />
         </div>
 
         <div class="border-round" style="overflow: hidden;">
-            <DataTable 
-                :value="filteredTickets"
-                tableStyle="min-width: 50rem" 
-                paginator 
-                :rows="20"
-                :rowsPerPageOptions="[20, 50]"
-            >
+            <DataTable :value="filteredTickets" tableStyle="min-width: 50rem" paginator :rows="20"
+                :rowsPerPageOptions="[20, 50]">
                 <Column field="ticketId" header="Id"></Column>
                 <Column field="eventName" header="Event Name"></Column>
                 <Column field="ticketOwnerName" header="Owner Name"></Column>
@@ -32,10 +24,8 @@
                 <!-- Actions Column with Download and Edit Buttons -->
                 <Column header="Actions">
                     <template #body="slotProps">
-                        <button 
-                            @click="downloadTicket(slotProps.data.ticketId)" 
-                            class="px-3 py-2 text-white bg-green-500 rounded mr-2"
-                        >
+                        <button @click="downloadTicket(slotProps.data.ticketId)"
+                            class="px-3 py-2 text-white bg-green-500 rounded mr-2">
                             Download PDF
                         </button>
                     </template>
@@ -54,7 +44,7 @@
 import { ref, computed } from 'vue';
 
 definePageMeta({
-  middleware: 'auth'
+    middleware: 'auth'
 })
 
 // Define the token and fetch data
@@ -153,14 +143,16 @@ function downloadTicket(ticketId) {
 
 <style scoped>
 /* Reduce font size for the DataTable */
-.p-datatable, 
-.p-datatable-header, 
-.p-datatable-tbody > tr > td, 
-.p-datatable-tbody > tr > th {
-    font-size: 0.875rem; /* Smaller font size */
+.p-datatable,
+.p-datatable-header,
+.p-datatable-tbody>tr>td,
+.p-datatable-tbody>tr>th {
+    font-size: 0.875rem;
+    /* Smaller font size */
 }
 
 h2 {
-    font-size: 1.5rem; /* Smaller header size */
+    font-size: 1.5rem;
+    /* Smaller header size */
 }
 </style>
